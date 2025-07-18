@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة مهام وظيفي – عرض شهري</title>
+  <style>
+    :root {
+      --primary: #2a9d8f;
+      --secondary: #264653;
+      --light: #f1faee;
+      --dark: #1d3557;
+      --accent: #e9c46a;
+      --font: "Tajawal", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--light);
+      color: var(--dark);
+      padding: 20px;
+      line-height: 1.5;
+    }
+    h1 { text-align: center; color: var(--secondary); margin-bottom: 20px; }
+    h2 { color: var(--primary); margin: 15px 0; }
+    .container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    aside {
+      flex: 1 1 280px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+    main {
+      flex: 3 1 600px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    select, button {
+      padding: 8px 12px;
+      font-size: 1rem;
+      margin: 0 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: var(--dark); }
+    /* Collapsible */
+    details { margin-bottom: 10px; }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 8px;
+      background: var(--accent);
+      border-radius: 4px;
+      list-style: none;
+    }
+    details[open] summary { background: var(--primary); color: #fff; }
+    details ul { margin: 5px 0 0 15px; list-style: disc inside; }
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: right;
+      vertical-align: top;
+      min-width: 120px;
+    }
+    th { background: var(--secondary); color: #fff; }
+    td p { margin: 4px 0; }
+    @media (max-width: 800px) {
+      .container { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <h1>لوحة مهام وظيفي – عرض شهري</h1>
+  <div class="container">
+    <aside>
+      <h2>المهام المتكررة</h2>
+      <details id="daily">
+        <summary>المهام اليومية</summary>
+        <ul id="daily-list">
+          <li>مراجعة التحويلات</li>
+          <li>التواصل مع أصحاب التبرعات غير المكتملة</li>
+          <li>إرسال رسائل شكر واتساب ورسائل للاستقطاع</li>
+          <li>مراجعة حملات القبول/الرفض</li>
+          <li>الرد على الاستفسارات</li>
+        </ul>
+      </details>
+      <details id="weekly">
+        <summary>المهام الأسبوعية</summary>
+        <ul id="weekly-list">
+          <li>خطابات شكر للمستقطعين والحملات المكتملة</li>
+          <li>رسائل استقطاع (إثنين، أربعاء، جمعة)</li>
+          <li>تصفية الحملات (خميس)</li>
+        </ul>
+      </details>
+      <details id="monthly">
+        <summary>المهام الشهرية</summary>
+        <ul id="monthly-list">
+          <li>التقرير الشهري (اليوم 1)</li>
+          <li>حساب الإيرادات (اليوم 3)</li>
+          <li>تقرير منجزات الشهر (الأسبوع 4)</li>
+        </ul>
+      </details>
+      <details id="quarterly">
+        <summary>المهام الربع سنوية</summary>
+        <ul id="quarterly-list">
+          <li>أبريل، يوليو، أكتوبر:
+            <ul id="quarter-projects">
+              <li>بيان بالمشاريع المؤهلة (الأسبوع 1)</li>
+              <li>تقرير ربع سنوي للمشاريع (الأسبوع 3)</li>
+              <li>إرسال تقرير الربع وإحصائيات (الأسبوع 4)</li>
+            </ul>
+          </li>
+          <li>مايو، أغسطس، نوفمبر:
+            <ul id="quarter-campaigns">
+              <li>بيان بالحملات المكتملة (الأسبوع 1)</li>
+              <li>تقرير ربع سنوي للحملات (الأسبوع 3)</li>
+              <li>إرسال تقرير الربع وإحصائيات (الأسبوع 4)</li>
+            </ul>
+          </li>
+        </ul>
+      </details>
+      <details id="half">
+        <summary>المهام نصف السنوية</summary>
+        <ul id="half-list">
+          <li>تقرير نصفي لأهل الزكاة (يوليو، الأسبوع 1)</li>
+        </ul>
+      </details>
+      <details id="annual">
+        <summary>المهام السنوية</summary>
+        <ul id="annual-list">
+          <li>تقرير سنوي وإيرادات المتجر (يناير، الأسبوع 1)</li>
+        </ul>
+      </details>
+      <h2>إضافة مهمة جديدة</h2>
+      <form id="task-form">
+        <select id="category">
+          <option value="daily-list">يومية</option>
+          <option value="weekly-list">أسبوعية</option>
+          <option value="monthly-list">شهرية</option>
+          <option value="quarterly-list">ربع سنوية</option>
+          <option value="half-list">نصف سنوية</option>
+          <option value="annual-list">سنوية</option>
+        </select>
+        <input type="text" id="task-text" placeholder="وصف المهمة" required="">
+        <button type="submit">أضف</button>
+      </form>
+    </aside>
+
+    <main>
+      <div class="controls">
+        <label for="monthSelect">اختر الشهر:</label>
+        <select id="monthSelect"></select>
+        <button onclick="window.print()">طباعة / PDF</button>
+        <button onclick="exportCSV()">تصدير CSV</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>الأسبوع 1</th>
+              <th>الأسبوع 2</th>
+              <th>الأسبوع 3</th>
+              <th>الأسبوع 4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="wk1"></td>
+              <td id="wk2"></td>
+              <td id="wk3"></td>
+              <td id="wk4"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // تهيئة قائمة الأشهر
+    const months = [
+      "يناير","فبراير","مارس","أبريل","مايو","يونيو",
+      "يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"
+    ];
+    const monthSelect = document.getElementById("monthSelect");
+    months.forEach((m,i)=>{
+      const opt = document.createElement("option");
+      opt.value = i; opt.textContent = m;
+      monthSelect.append(opt);
+    });
+    // عرض مهام الشهر المحدد
+    function renderMonth(i) {
+      const isQProj=[3,6,9].includes(i);
+      const isQCamp=[4,7,10].includes(i);
+      let w1=["المهام اليومية & الأسبوعية",
+              `التقرير الشهري (1/${i+1})`,
+              `حساب الإيرادات (3/${i+1})`];
+      if(i===0) w1.push("تقرير سنوي & إيرادات متجر");
+      if(isQProj) w1.push("بيان بالمشاريع");
+      if(isQCamp) w1.push("بيان بالحملات");
+      if(i===6) w1.push("تقرير نصفي لأهل الزكاة");
+      const w2=["المهام اليومية & الأسبوعية"];
+      const w3= isQProj?["تقرير ربع سنوي للمشاريع"]:
+                isQCamp?["تقرير ربع سنوي للحملات"]:
+                ["المهام اليومية & الأسبوعية"];
+      const w4=(isQProj||isQCamp)?
+                ["إرسال تقرير الربع & إحصائيات"]:
+                ["تقرير منجزات الشهر & إحصائيات"];
+      document.getElementById("wk1").innerHTML = w1.map(t=>`<p>${t}</p>`).join("");
+      document.getElementById("wk2").innerHTML = w2.map(t=>`<p>${t}</p>`).join("");
+      document.getElementById("wk3").innerHTML = w3.map(t=>`<p>${t}</p>`).join("");
+      document.getElementById("wk4").innerHTML = w4.map(t=>`<p>${t}</p>`).join("");
+    }
+    monthSelect.addEventListener("change",()=>renderMonth(+monthSelect.value));
+    monthSelect.value=0; renderMonth(0);
+
+    // أضف مهمة للقائمة
+    document.getElementById("task-form").addEventListener("submit",e=>{
+      e.preventDefault();
+      const cat = document.getElementById("category").value;
+      const txt = document.getElementById("task-text").value.trim();
+      if(!txt) return;
+      const ul = document.getElementById(cat);
+      const li = document.createElement("li");
+      li.textContent = txt;
+      ul.appendChild(li);
+      e.target.reset();
+    });
+
+    // تصدير CSV
+    function exportCSV() {
+      const headers = ["wk1","wk2","wk3","wk4"];
+      const row = headers.map(id=>
+        document.getElementById(id).innerText.replace(/\n/g," | ")
+      );
+      const csv = "week1,week2,week3,week4\n" + row.join(",");
+      const blob = new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${months[monthSelect.value]}_tasks.csv`;
+      link.click();
+    }
+  </script>
+
+
+</body></html>
