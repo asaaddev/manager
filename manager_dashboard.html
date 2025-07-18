@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم مهام التسويق</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* تنسيقات رأس الصفحة (Header) */
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* توسيط العناصر في المنتصف */
+            flex-wrap: wrap; /* السماح للعناصر بالنزول لسطر جديد عند الشاشات الصغيرة */
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .site-header img {
+            max-height: 60px; /* حجم الشعار */
+            margin-left: 20px; /* مسافة بين الشعار والعنوان */
+        }
+        .site-header h1 {
+            margin: 0; /* إزالة الهوامش الافتراضية لـ h1 */
+            color: #007bff;
+            font-size: 32px;
+            text-align: center; /* التأكد من توسيط النص */
+            flex-grow: 1; /* للسماح للعنوان بأخذ المساحة المتاحة */
+        }
+        @media (max-width: 768px) {
+            .site-header {
+                flex-direction: column; /* ترتيب العناصر عموديًا على الشاشات الصغيرة */
+            }
+            .site-header img {
+                margin-left: 0;
+                margin-bottom: 15px; /* مسافة أسفل الشعار */
+            }
+            .site-header h1 {
+                font-size: 28px;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* مسافة بين الأزرار */
+            margin: 20px auto;
+        }
+        .action-button {
+            padding: 12px 25px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        /* اللون الجديد لزر التحديث */
+        .refresh-button {
+            background-color: #4a5568; /* أزرق داكن/رمادي */
+        }
+        .refresh-button:hover {
+            background-color: #333f50; /* أغمق قليلاً عند التمرير */
+        }
+        .export-button {
+            background-color: #6c757d; /* اللون الرمادي الحالي لـ PDF */
+        }
+        .export-button:hover {
+            background-color: #5a6268;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .loading-message {
+            color: #007bff;
+        }
+        .success-message {
+            color: #28a745;
+        }
+        .error-message {
+            color: #dc3545;
+        }
+        
+        /* تنسيقات حقل التصفية بالشهر ويوم الأسبوع */
+        .filter-section {
+            text-align: center; 
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* للسماح بالعناصر بالانتقال لسطر جديد على الشاشات الصغيرة */
+            gap: 20px; /* مسافة بين فلاتر التصفية */
+        }
+        .filter-section div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-section label {
+            font-weight: bold; 
+        }
+        .filter-section select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23212529" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: left 10px center; /* Adjust for RTL */
+            background-size: 20px;
+            padding-left: 35px; /* Space for the arrow */
+        }
+
+        /* تنسيقات الرسوم البيانية (لا تزال هنا للعرض على الصفحة، لكن لن يتم تصديرها) */
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .chart-box {
+            width: 48%; /* لكل رسم بياني، يمكن تعديل النسبة */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            min-height: 350px; /* لضمان ارتفاع ثابت للرسوم البيانية */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .chart-box canvas {
+            max-height: 300px;
+            width: 100% !important;
+            height: auto !important;
+        }
+        @media (max-width: 992px) {
+            .chart-box {
+                width: 95%;
+            }
+        }
+
+        /* تنسيقات الجداول الخاصة بالموظفين */
+        .employee-tasks-section, .main-table-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .employee-tasks-section h2, .main-table-section h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .employee-table-container, .main-table-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto; /* لجعل الجدول قابلاً للتمرير أفقياً على الشاشات الصغيرة */
+        }
+        .employee-table-container h3 {
+            color: #343a40;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .employee-table, .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 700px; /* ضمان أن الجدول لا يصغر أكثر من اللازم */
+        }
+        .employee-table th, .employee-table td, .main-table th, .main-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: right;
+        }
+        .employee-table th, .main-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .employee-table tr:nth-child(even), .main-table tr:nth-child(even) {
+            background-color: #f2f6fa;
+        }
+        .employee-table tr:hover, .main-table tr:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <a href="manager_dashboard.html">
+                <img src="logo.png" alt="شعار الشركة">
+            </a>
+            <h1>لوحة تحكم مهام القسم</h1>
+        </header>
+        
+        <div class="button-group">
+            <button class="action-button refresh-button" onclick="fetchAndDisplayTasks()">تحديث البيانات</button>
+            <button class="action-button export-button" onclick="generatePdf()">تصدير كـ PDF</button>
+        </div>
+
+        <div id="message" class="loading-message">جاري تحميل البيانات...</div>
+
+        <div class="filter-section">
+            <div>
+                <label for="monthFilter">تصفية حسب الشهر:</label>
+                <select id="monthFilter" onchange="fetchAndDisplayTasks()">
+                    <option value="">جميع الأشهر</option>
+                    <option value="1">يناير</option>
+                    <option value="2">فبراير</option>
+                    <option value="3">مارس</option>
+                    <option value="4">أبريل</option>
+                    <option value="5">مايو</option>
+                    <option value="6">يونيو</option>
+                    <option value="7">يوليو</option>
+                    <option value="8">أغسطس</option>
+                    <option value="9">سبتمبر</option>
+                    <option value="10">أكتوبر</option>
+                    <option value="11">نوفمبر</option>
+                    <option value="12">ديسمبر</option>
+                </select>
+            </div>
+            <div>
+                <label for="dayOfWeekFilter">تصفية حسب يوم الأسبوع:</label>
+                <select id="dayOfWeekFilter" onchange="fetchAndDisplayTasks()">
+                    <option value="">جميع الأيام</option>
+                    <option value="الأحد">الأحد</option>
+                    <option value="الإثنين">الإثنين</option>
+                    <option value="الثلاثاء">الثلاثاء</option>
+                    <option value="الأربعاء">الأربعاء</option>
+                    <option value="الخميس">الخميس</option>
+                    <option value="الجمعة">الجمعة</option>
+                    <option value="السبت">السبت</option>
+                </select>
+            </div>
+        </div>
+
+        ---
+
+    <div id="printableContent">
+            <div class="employee-tasks-section">
+                <h2>مهام الموظفين الفردية</h2>
+                <div id="employeeTasksTablesContainer">
+                    </div>
+            </div>
+        ---
+
+        <div class="chart-container">
+            <div class="chart-box">
+                <h2>المهام حسب الحالة</h2>
+                <canvas id="statusChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>المهام حسب الموظف</h2>
+                <canvas id="employeeChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>المهام حسب النوع</h2>
+                <canvas id="typeChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>أكثر المهام شيوعًا</h2>
+                <canvas id="mostCommonTasksChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>المهام حسب يوم الأسبوع</h2>
+                <canvas id="dayOfWeekChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h2>إجمالي الكميات المنجزة (للمهام ذات الكمية)</h2>
+                <canvas id="quantityChart"></canvas>
+            </div>
+        </div>
+
+        ---
+
+    
+
+            <div class="main-table-section">
+                <h2>جميع المهام (مُفلترة)</h2>
+                <div class="main-table-container">
+                    <table class="main-table">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>يوم الأسبوع</th>
+                                <th>نوع المهمة</th>
+                                <th>المهمة</th>
+                                <th>الحالة</th>
+                                <th>ملاحظات</th>
+                                <th>الموظف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    <script src="manager_script.js"></script>
+</body>
+</html>
