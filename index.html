@@ -85,7 +85,15 @@
         .export-button:hover {
             background-color: #5a6268;
         }
-
+    .plan-button {
+            background-color: #55a268; /* اللون الرمادي الحالي لـ PDF */
+        }
+        .export-button:hover {
+            background-color: #5a6268;
+        }
+   
+   
+       
         #message {
             text-align: center;
             margin-top: 20px;
@@ -220,6 +228,10 @@
     </style>
 </head>
 <body>
+
+ <div class="container">
+
+      
     <div class="container">
         <header class="site-header">
             <a href="manager_dashboard.html">
@@ -231,6 +243,9 @@
         <div class="button-group">
             <button class="action-button refresh-button" onclick="fetchAndDisplayTasks()">تحديث البيانات</button>
             <button class="action-button export-button" onclick="generatePdf()">تصدير كـ PDF</button>
+
+    <button class="action-button plan-button" onclick="window.location.href='poe-preview1.html'">الخطة</button>
+
         </div>
 
         <div id="message" class="loading-message">جاري تحميل البيانات...</div>
